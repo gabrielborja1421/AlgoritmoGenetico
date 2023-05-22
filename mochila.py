@@ -100,7 +100,7 @@ class mochila:
                 """ print(pob_nueva[-1]) """
                 pob_nueva.extend([hijo1, hijo2])
             
-        pob_nueva = self.poda(pob_nueva)
+            pob_nueva = self.poda(pob_nueva)
         self.pob = pob_nueva[:self.pob_max]
         
 
@@ -117,15 +117,15 @@ class mochila:
             diferencia_relativa = abs(fitIndividuo - numeroObjetivo) / abs(numeroObjetivo)
             print(diferencia_relativa)
             if diferencia_relativa <= tolerancia_relativa:
-                lista.append(self.fitness_pro(x))
+                lista.append (x)
                 """ print(f'el numero {count} sobrevivio ') """
             elif diferencia_relativa>= tolerancia_relativa:
-                lista2.append(self.fitness_pro(x))
+                lista2.append (x)
 
             count+=1
-        print(f'\nlista con los individuos con la calificacion mas baja que la tolerancia\n {lista} \n\n\n  ' )
-        print(f'\nlista con los individuos con la calificacion mas alta que la tolerancia\n {lista2} \n\n\n  ' )
-        
+            total = [self.fitness_pro(i) for i in pob_nueva]
+        print(f'\nlista con los individuos con la calificacion más baja que la tolerancia\n {total} \n\n\n  ' )
+       
         return lista
         
         
@@ -146,7 +146,9 @@ class mochila:
         
         numeros_faltantes = set(range(1, 115)) - set(resultado)
         numeros_faltantes = sorted(list(numeros_faltantes))
-        """ print(f'los numeros faltantes son {numeros_faltantes}') """
+        # print(f'los numeros faltantes son {numeros_faltantes}')
+        # random.shuffle(numeros_faltantes)
+        # print(f'los numeros faltantes son {numeros_faltantes}')
         for numero in repetidos:
             resultado.append(numeros_faltantes.pop(0))
  
@@ -198,7 +200,7 @@ for index, row in df.iterrows():
     alimentos.append(alimento)
         
 
-mochila= mochila(10,20,.5,.6,.4,0,1000)
+mochila= mochila(4,50,.7,.8,.8,0,1000)
 mochila.setAlimentos(alimentos)
 mochila.generaciones()
 
