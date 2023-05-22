@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, uic
 
 class mochila:
 
-    def __init__(self,pob_inicial,pob_max,prob_cruza,prob_mutacion,prob_genes,fitness,nSeleccionados,objetivo):
+    def __init__(self,pob_inicial,pob_max,prob_cruza,prob_mutacion,prob_genes,fitness,objetivo):
 
         self.pob = pob_inicial
         self.pob_max = pob_max
@@ -13,9 +13,8 @@ class mochila:
         self.prob_mutacion = prob_mutacion
         self.prob_genes = prob_genes
         self.fitness = fitness
-        self.nSeleccionados = nSeleccionados
         self.MaxMochila = 3000
-        self.objetivo= 1000
+        self.objetivo= 7000
 
     def generar_individuo (self, cantidad):
         rango = list(range(1,115))
@@ -27,31 +26,24 @@ class mochila:
  
 
     def fitness_pro(self,individuo):
-        """ print(individuo) """
+
         energia_total= 0
         count=0
         for i in range(len(individuo)):
             count+=1
-            numero = individuo[i]
+            numero = individuo[i] -1
             if count<30:
                 energia_total= energia_total +alimentos[numero].energia
         """ print(energia_total) """
         return energia_total
 
-    def seleccion(self,poblacion):
-        """ 
-        seleccion por competicion
-
-        """
-        score = [(self.fitness_pro(i), i) for i in poblacion]
-        #score = [(i[0], i[1]) for i in sorted(score) ]
-        score = [ i[1] for i in sorted(score) ]
-        seleccionados = score [len (score) - self.nSeleccionados :]
-        self.seleccionados = seleccionados
-        """ print(seleccionados) """
-       
-
-        return(seleccionados)
+    def seleccion(self,pob):
+        fitness = [self.fitness_pro(i) for i in pob]
+        fitness_suma = sum(fitness)
+        prob = [f / fitness_suma for f in fitness]
+        i_padres = np.random.choice(
+            len(pob), size=2, replace=False, p=prob)
+        return pob[i_padres[0]], pob[i_padres[1]]
         
     def crear_pob_inicial (self,poblacion):
         pob = []
@@ -59,34 +51,25 @@ class mochila:
             pob.append(self.generar_individuo(114))
         return pob
             
-    def cruza(self,poblacion , seleccionados ):
-        fathers=[]
-        fathers = random.sample(seleccionados, 2)
-        longitud = min(len(fathers[0]), len(fathers[1]))
-        cruza = random.randint(1, longitud -1)
+    def cruza(self,fathers):
 
-        hijo1 = fathers[0][:cruza] + fathers[1][cruza:]
-        hijo2 = fathers[1][: cruza] + fathers[0] [cruza:]
-        """ print(f'el padre numero 1 es {fathers[0]}\n\n el padre 2 es: {fathers[1]}\n\n')
-        print(f'el hijo numero 1 es {hijo1} \n\n el hijo 2 es {hijo2}') """
-        hijo1=self.completar_lista(hijo1)
-        hijo2=self.completar_lista(hijo2)
-        """ print(f'hijo uno : {hijo1} \n\n hijo dos: {hijo2}') """
-        
-        return hijo1, hijo2
+        if random.random() < self.prob_cruza:
+            longitud = min(len(fathers[0]), len(fathers[1]))
+            cruza = random.randint(1, longitud -1)
+
+            hijo1 = fathers[0][:cruza] + fathers[1][cruza:]
+            hijo2 = fathers[1][: cruza] + fathers[0] [cruza:]
+            """ print(f'\n\nel padre numero 1 es {fathers[0]}\n\n el padre 2 es: {fathers[1]}\n\n')
+            print(f'\n\nel hijo numero 1 es {hijo1} \n\n el hijo 2 es {hijo2}') """
+            hijo1=self.completar_lista(hijo1)
+            hijo2=self.completar_lista(hijo2)
+            """ print(f'hijo uno : {hijo1} \n\n hijo dos: {hijo2}') """
+            """ print(f'\n\n\nh i j o 1   {hijo1}  \n\n\n')
+            print(f'\n\n\nh i j o 2   {hijo2}  \n\n\n') """
+            return hijo1, hijo2
+        return fathers[0], fathers[1]
+       
       
-
-    def mutacion (self, poblacion):
-        for i in range(len(poblacion)):
-            if random.random() <= self.prob_mutacion:
-                point = random.randint(1, len(poblacion[i]) - 1)
-                new_value = np.random.randint(0, 9)
-
-                while new_value == poblacion[i][point]:
-                    new_value = np.random.randint(0, 9)
-                poblacion[i][point] = new_value
-
-        return poblacion
 
 
     def listaDecruza (self, lista1,lista2):
@@ -100,36 +83,49 @@ class mochila:
     
     def generaciones(self):
         pob_nueva = self.crear_pob_inicial(self.pob)
-        hijo1 = None
-        hijo2 = None
-        print(alimentos[0].energia)
+
         while len(pob_nueva) < self.pob_max:
-            print (pob_nueva)
-            if random.uniform(0, 1) <= self.prob_cruza:
-                hijo1, hijo2 = self.cruza(pob_nueva, self.seleccion(pob_nueva))
+            padres = self.seleccion(pob_nueva)
+            hijo1, hijo2 = self.cruza(padres)
+
+            
             if random.uniform(0, 1) <= self.prob_mutacion:
+                """ print(f'\n\neste es el hijo 1\n{hijo1}\n\n') """
                 hijo1 = self.mutacion_gen(hijo1)
+                """ print(f'\n\neste es el hijo mutado 1\n{hijo1}\n\n') """
             if random.uniform(0, 1) <= self.prob_mutacion:
-                hijo2 = self.mutacion_gen(hijo2)
-            if hijo1!=None and hijo2 != None:
+                """ print(f'\n\neste es el hijo 2\n{hijo2}\n\n') """
+                hijo1 = self.mutacion_gen(hijo2)
+                """ print(f'\n\neste es el hijo mutado 2\n{hijo2}\n\n') """
+                """ print(pob_nueva[-1]) """
                 pob_nueva.extend([hijo1, hijo2])
-            # self.poda(pob_nueva)
-        self.pob = pob_nueva[self.pob_max]
+            
+        pob_nueva = self.poda(pob_nueva)
+        self.pob = pob_nueva[:self.pob_max]
+        
 
     def poda(self,pob_nueva):
-        tolerancia_relativa = 0.50
+        
+        tolerancia_relativa = 0.2
         numeroObjetivo = self.objetivo
         lista = []
+        lista2 = []
         count =0
         for x in pob_nueva:
-            
+        
             fitIndividuo= self.fitness_pro(x)
             diferencia_relativa = abs(fitIndividuo - numeroObjetivo) / abs(numeroObjetivo)
+            print(diferencia_relativa)
             if diferencia_relativa <= tolerancia_relativa:
-                lista.append(x)
+                lista.append(self.fitness_pro(x))
                 """ print(f'el numero {count} sobrevivio ') """
+            elif diferencia_relativa>= tolerancia_relativa:
+                lista2.append(self.fitness_pro(x))
+
             count+=1
-            
+        print(f'\nlista con los individuos con la calificacion mas baja que la tolerancia\n {lista} \n\n\n  ' )
+        print(f'\nlista con los individuos con la calificacion mas alta que la tolerancia\n {lista2} \n\n\n  ' )
+        
         return lista
         
         
@@ -155,24 +151,32 @@ class mochila:
             resultado.append(numeros_faltantes.pop(0))
  
         return resultado
-        
-    def mutacion_gen(self,individuo):
-        for i in range(len(individuo)):
-            numero= random.randint(0,113)
-
-            if random.uniform(0,1) <= self.prob_genes:
-                self.intercambiar_posiciones(individuo,i,numero)
 
 
-    def intercambiar_posiciones(self,individuo, pos1, pos2):
-        lista=[]
-        """ print(f'pos1 es {pos1}\n\n pos2 es {pos2}') """
-        """    print (len(individuo))
-        print(f'el intercambio sera {pos1} a {pos2}') """
-        lista.extend(individuo)
-        """ print(len(lista),len(individuo)) """
+    def mutacion_gen(self, individuo):
+        individuo_mutado = individuo # Hacer una copia del individuo original
+
+        for i in range(len(individuo_mutado)):
+            numero = random.randint(0, 113)
+
+            if random.uniform(0, 1) <= self.prob_genes:
+                individuo_mutado = self.intercambiar_posiciones(individuo_mutado, i, numero)
+
+        return individuo_mutado  # Retornar el individuo mutado
+
+
+    def intercambiar_posiciones(self, individuo, pos1, pos2):
+        lista = individuo  # Hacer una copia del individuo original
         lista[pos1], lista[pos2] = lista[pos2], lista[pos1]
-        #print(f'antes de la mutacion de gen : \n\n {individuo} \n despues de la mutacion \n\n {lista}')
+        return lista
+
+
+
+
+
+
+
+
 """ 
 #iniciar aplicacion
 app = QtWidgets.QApplication([])
@@ -194,9 +198,16 @@ for index, row in df.iterrows():
     alimentos.append(alimento)
         
 
-mochila= mochila(10,20,.5,.4,.6,0,4,1000)
+mochila= mochila(10,20,.5,.6,.4,0,1000)
 mochila.setAlimentos(alimentos)
 mochila.generaciones()
+
+
+
+
+
+
+
 
 
 
