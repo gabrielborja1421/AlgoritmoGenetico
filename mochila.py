@@ -2,6 +2,8 @@ import random
 import numpy as np
 from Alimentos import *
 from PyQt5 import QtWidgets, uic
+import tkinter as tk
+from tkinter import font
 
 class mochila:
 
@@ -26,7 +28,7 @@ class mochila:
  
 
     def fitness_pro(self,individuo):
-
+        print(individuo)
         energia_total= 0
         count=0
         for i in range(len(individuo)):
@@ -99,14 +101,14 @@ class mochila:
                 """ print(f'\n\neste es el hijo mutado 2\n{hijo2}\n\n') """
                 """ print(pob_nueva[-1]) """
                 pob_nueva.extend([hijo1, hijo2])
-            
-        pob_nueva = self.poda(pob_nueva)
+            print(pob_nueva[-1])
+            pob_nueva = self.poda(pob_nueva)
         self.pob = pob_nueva[:self.pob_max]
         
 
     def poda(self,pob_nueva):
         
-        tolerancia_relativa = 0.2
+        tolerancia_relativa = 0.3
         numeroObjetivo = self.objetivo
         lista = []
         lista2 = []
@@ -115,7 +117,7 @@ class mochila:
         
             fitIndividuo= self.fitness_pro(x)
             diferencia_relativa = abs(fitIndividuo - numeroObjetivo) / abs(numeroObjetivo)
-            print(diferencia_relativa)
+            """ print(diferencia_relativa) """
             if diferencia_relativa <= tolerancia_relativa:
                 lista.append(self.fitness_pro(x))
                 """ print(f'el numero {count} sobrevivio ') """
@@ -123,8 +125,8 @@ class mochila:
                 lista2.append(self.fitness_pro(x))
 
             count+=1
-        print(f'\nlista con los individuos con la calificacion mas baja que la tolerancia\n {lista} \n\n\n  ' )
-        print(f'\nlista con los individuos con la calificacion mas alta que la tolerancia\n {lista2} \n\n\n  ' )
+        """  print(f'\nlista con los individuos con la calificacion mas baja que la tolerancia\n {lista} \n\n\n  ' )
+        print(f'\nlista con los individuos con la calificacion mas alta que la tolerancia\n {lista2} \n\n\n  ' ) """
         
         return lista
         
@@ -171,36 +173,103 @@ class mochila:
         return lista
 
 
+root = tk.Tk()
+root.config(bg="#FFFFFF")
+centralwidget= tk.Frame(root)
+centralwidget.pack()
+
+widget_2 = tk.Frame(root, bg="#F5F190")
+widget_2.place(x=0, y=0, width=1000, height=70)
+
+fuente = font.Font(family="Montserrat", size=24, weight="bold")
+fuente2 = font.Font(family="Montserrat", size=18, weight="bold")
+fuente3 = font.Font(family="Montserrat", size=24, weight="bold")
+y1 = 305
+y2 = 350
+y3 = 440
+y4 = 483
+
+label = tk.Label(root, text="Pob_incial", font=fuente2, fg="#1E1E1E", bg="white")
+label.place(x=150, y=145)
+
+pob_init = tk.Entry(root, width=30,font=fuente2, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+pob_init.place(x=330, y=150)
+
+label_2 = tk.Label(root, text="Pob_max", font=fuente2, bg="white", fg="#1E1E1E")
+label_2.place(x=150, y=200)
+
+Pob_max = tk.Entry(root,width=30,font=fuente2, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+Pob_max.place(x=330, y=205)
+
+label_3 = tk.Label(root, text="Prob_Cruza", font=fuente2, bg="white", fg="#1E1E1E")
+label_3.place(x=135, y=y1)
+
+Prob_cruza = tk.Entry(root, width=10,font=fuente, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+Prob_cruza.place(x=120, y=y2)
+
+label_4 = tk.Label(root, text="Prob_mutacion", font=fuente2, bg="white", fg="#1E1E1E")
+label_4.place(x=360, y=y1)
+
+Prob_mutacion = tk.Entry(root, width=10,font=fuente, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+Prob_mutacion.place(x=370, y=y2)
+
+label_6 = tk.Label(root, text="Prob_genes", font=fuente2, bg="white", fg="#1E1E1E")
+label_6.place(x=635, y=y1)
+
+Prob_genes = tk.Entry(root, width=10,font=fuente, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+Prob_genes.place(x=620, y=y2)
+
+label_5 = tk.Label(root, text="Objetivo", font=fuente2, bg="white", fg="#1E1E1E")
+label_5.place(x=140, y=y3)
+
+Objetivo = tk.Entry(root, width=10,font=fuente, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+Objetivo.place(x=120, y=y4)
+
+
+label_8 = tk.Label(root, text="Tipo", font=fuente2, bg="white", fg="#1E1E1E")
+label_8.place(x=390, y=y3)
+
+enfoque = tk.Entry(root, width=10, font=fuente, bg="#7ce2cc", bd=0, highlightthickness=2, highlightbackground="black")
+enfoque.place(x=370, y=y4)
+
+button = tk.Button(root, text="Obtener", font=fuente, bg="#72B960", fg="white")
+button.place(x=756, y=508, width=187, height=60)
+
+label_7 = tk.Label(root, text="Rellene los siguientes campos", font=fuente3,  bg="#F5F190", fg="#1E1E1E")
+label_7.place(x=150, y=10, width=700, height=50)
+root.geometry("1000x600")
+root.mainloop() 
+
+def inicializar():
+
+    pob_inicial = int(pob_init.get())
+    pob_max = int(Pob_max.get())
+    prob_cruza = float(Prob_cruza.get())
+    prob_mutacion = float(Prob_mutacion.get())
+    prob_genes = float(Prob_genes.get())
+    fitness = # Aquí debes obtener el valor del campo de entrada correspondiente a fitness
+    objetivo = # Aquí debes obtener el valor del campo de entrada correspondiente a objetivo
+
+    alimentos = []
+    df = pd.read_excel("dataset alimentos.xlsx")
+
+
+    for index, row in df.iterrows():
+        alimento = Alimento(row['Alimento'], row['Categoria'], row['Energía'], row['Proteína'], row['Grasa'], row['Calcio'], row['Hierro'], row['Vitamina A'], row['Tiamina'], row['Riboflavina'], row['Niacina'], row['Folato'], row['Vitamina C'])
+        alimentos.append(alimento)
+                
+
+    mochila= mochila(4,20,.5,.6,.6,0,1000)
+    mochila.setAlimentos(alimentos)
+    mochila.generaciones()
 
 
 
 
 
 
-""" 
-#iniciar aplicacion
-app = QtWidgets.QApplication([])
-
-# cargar archivo .ui
-home = uic.loadUi("home.ui")
 
 
-#ejecutar 
-home.show()
-app.exec() """
-
-alimentos = []
-df = pd.read_excel("dataset alimentos.xlsx")
-
-
-for index, row in df.iterrows():
-    alimento = Alimento(row['Alimento'], row['Categoria'], row['Energía'], row['Proteína'], row['Grasa'], row['Calcio'], row['Hierro'], row['Vitamina A'], row['Tiamina'], row['Riboflavina'], row['Niacina'], row['Folato'], row['Vitamina C'])
-    alimentos.append(alimento)
-        
-
-mochila= mochila(10,20,.5,.6,.4,0,1000)
-mochila.setAlimentos(alimentos)
-mochila.generaciones()
 
 
 
