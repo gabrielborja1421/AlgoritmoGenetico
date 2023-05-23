@@ -300,7 +300,6 @@ mochila.generaciones()
 
 
 
-
 #generar_num_aleatorios = mochila(1,1,1,1,1,1) 
 
 
