@@ -2,11 +2,11 @@ import pandas as pd
 
 
 class Alimento:
-    def __init__(self, Alimento, Categoria, Energía, Proteína, Grasa, Calcio, Hierro, Vitamina_A, Tiamina, Riboflavina, Niacina, Folato, Vitamina_C):
+    def __init__(self, Alimento, Categoria, Energía, Proteina, Grasa, Calcio, Hierro, Vitamina_A, Tiamina, Riboflavina, Niacina, Folato, Vitamina_C):
         self.nombre = Alimento
         self.categoria = Categoria
         self.energia = Energía
-        self.proteina = Proteína
+        self.proteina = Proteina
         self.grasa = Grasa
         self.calcio = Calcio
         self.hierro = Hierro
