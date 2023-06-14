@@ -1,40 +1,27 @@
-import tkinter as tk
-from tkinter import ttk
-import pandas as pd
 
-# Datos de ejemplo
-datos = [
-    ["Alimento 1", "Categoría 1", 100, 10, 5, 20, 2, 1000, 0.5, 0.8, 5, 50, 80, "Resultado 1", "Deseado 1"],
-    ["Alimento 2", "Categoría 2", 200, 15, 8, 30, 3, 1500, 0.7, 1.2, 8, 70, 100, "Resultado 2", "Deseado 2"],
-    ["Alimento 3", "Categoría 1", 150, 12, 6, 25, 2.5, 1200, 0.6, 1.0, 6, 60, 90, "Resultado 3", "Deseado 3"],
-    # Agrega más filas según sea necesario
-]
+lis = ["lili","juan","jose","luis","josue","Jorge","Ana"]
+l = [8,4,2,5,6,6,7,3,3,4]
+for x in l:
+    print (f'Nombre : {x}')
+for x in range(len(lis)):
+    print (f'numero de lista : {x}')
 
-columnas = ["Alimento", "Categoría", "Energía", "Proteína", "Grasa", "Calcio", "Hierro", "Vitamina_A", "Tiamina", "Riboflavina", "Niacina", "Folato", "Vitamina_C", "Resultado", "Deseado"]
 
-# Crear una ventana
-ventana = tk.Tk()
-ventana.title("Tabla de Alimentos")
 
-# Crear el Treeview
-tree = ttk.Treeview(ventana)
-tree["columns"] = columnas
-tree["show"] = "headings"
+def completar_lista(lista):
+    repetidos = []
+    resultado = []
 
-# Configurar las columnas
-for col in columnas:
-    tree.column(col, width=80)  # Ajustar el ancho de las columnas aquí
+    for numero in lista:
+        if numero not in resultado:
+            resultado.append(numero)
+        else:
+            repetidos.append(numero)
 
-# Configurar el encabezado
-for col in columnas:
-    tree.heading(col, text=col)
+    numeros_faltantes = set(range(1, 115)) - set(resultado)
+    numeros_faltantes = sorted(list(numeros_faltantes))
 
-# Agregar los datos a la tabla
-for fila in datos:
-    tree.insert("", "end", values=fila)
+    for numero in repetidos:
+        resultado.append(numeros_faltantes.pop(0))
 
-# Agregar el Treeview a la ventana
-tree.pack()
-
-# Iniciar el bucle de eventos
-ventana.mainloop()
+    return resultado
